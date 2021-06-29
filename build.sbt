@@ -22,6 +22,7 @@ val repoKind = settingKey[String]("""Maven repository kind ("snapshots" or "rele
 val DocTest = config("doctest").extend(Test)
 val MacroConfig = config("macro")
 
+ThisBuild / versionScheme := Some("semver-spec")
 
 def scaladocSourceUrl(dir: String) =
   Compile / doc / scalacOptions ++= Seq(
@@ -136,10 +137,6 @@ lazy val slick =
       test := {},
       testOnly := {},
 
-      mimaPreviousArtifacts :=
-        binaryCompatSlickVersion.value.toSet
-          .map((v: String) => "com.typesafe.slick" % ("slick_" + scalaBinaryVersion.value) % v),
-
       mimaBinaryIssueFilters ++= Seq(
         ProblemFilters.exclude[MissingClassProblem]("slick.util.MacroSupportInterpolationImpl$"),
         ProblemFilters.exclude[MissingClassProblem]("slick.util.MacroSupportInterpolationImpl"),
@@ -223,7 +220,7 @@ lazy val testkit =
       },
       DocTest / unmanagedSourceDirectories += Docs.docDir.value / "code",
       DocTest / unmanagedResourceDirectories += Docs.docDir.value / "code"
-    )
+    ).disablePlugins(SbtVersionSchemeEnforcerPlugin)
 
 lazy val codegen =
   project
@@ -239,7 +236,7 @@ lazy val codegen =
       scaladocSourceUrl("slick-codegen"),
       test := {}, testOnly := {}, // suppress test status output
       commonTestResourcesSetting
-    )
+    ).disablePlugins(SbtVersionSchemeEnforcerPlugin)
 
 lazy val hikaricp =
   project
@@ -255,7 +252,7 @@ lazy val hikaricp =
       scaladocSourceUrl("slick-hikaricp"),
       test := {}, testOnly := {}, // suppress test status output
       libraryDependencies += Dependencies.hikariCP,
-    )
+    ).disablePlugins(SbtVersionSchemeEnforcerPlugin)
 
 lazy val `reactive-streams-tests` =
   project
